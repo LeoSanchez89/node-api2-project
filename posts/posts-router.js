@@ -159,12 +159,17 @@ router.put("/:id", (req, res) => {
     } else {
         const changes = req.body;
         Posts.update(req.params.id, changes)
-            .then(post => {
-                if (!post) {
+            .then(added => {
+                if (!added) {
                     res.status(404).json({ message: "The post with the specified ID does not exist." });
                 } else {
-                    
-                    res.status(200).json(post);
+                    Posts.findById(req.params.id)
+                        .then(post => {
+							res.status(200).json(post);
+						})
+						.catch(error => {
+							res.status(500).json({ error: "error retrieving post", error: error });
+						});
                 }
             })
             .catch(error => {
